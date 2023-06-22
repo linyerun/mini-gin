@@ -14,7 +14,7 @@ type loggerHandler struct {
 	t time.Time
 }
 
-func (f *loggerHandler) PrevHandle(c iface.IContext) {
+func (f *loggerHandler) PrevHandle(_ iface.IContext) {
 	f.t = time.Now()
 }
 
@@ -22,17 +22,20 @@ func (f *loggerHandler) LastHandle(c iface.IContext) {
 	Logger().Infof("%s [%d] %s in %v", c.GetRequest().Host, c.GetStatusCode(), c.GetRequest().RequestURI, time.Since(f.t))
 }
 
-func recoverHandlerFunc() iface.HandlerFunc {
-	return func(c iface.IContext) {
-		defer func() {
-			if err := recover(); err != nil {
-				message := fmt.Sprintf("%s", err)
-				Logger().Infof("%s\n\n", trace(message))
-				c.String(http.StatusInternalServerError, "Internal Server Error")
-			}
-		}()
-		c.(*context).next()
-	}
+type recoverHandler struct {
+}
+
+func (r *recoverHandler) PrevHandle(c iface.IContext) {
+	defer func() {
+		if err := recover(); err != nil {
+			message := fmt.Sprintf("%s", err)
+			Logger().Infof("%s\n\n", trace(message))
+			c.String(http.StatusInternalServerError, "Internal Server Error")
+		}
+	}()
+}
+
+func (r *recoverHandler) LastHandle(_ iface.IContext) {
 }
 
 // print stack trace for debug (调试用的)

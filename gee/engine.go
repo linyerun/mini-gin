@@ -15,13 +15,10 @@ type engine struct {
 }
 
 func New() iface.IEngine {
-	e := &engine{
-		router: newRouter(),
-	}
-	e.IRouterGroup = &routerGroup{engine: e}
+	e := &engine{router: newRouter()}
+	e.IRouterGroup = newRouterGroup("", nil, e)
 	e.addGroup(e.IRouterGroup) //e本身也是一个IRouter, 所以也加入groups里面
-	rg := e.IRouterGroup.(*routerGroup)
-	rg.middlewares = append(rg.middlewares, recoverHandlerFunc())
+	e.Use(new(recoverHandler))
 	return e
 }
 

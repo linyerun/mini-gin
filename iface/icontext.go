@@ -4,7 +4,7 @@ import "net/http"
 
 //为操作req和resp做封装
 
-type HandlerFunc func(IContext)
+type HandlerFunc func(c IContext)
 
 type IContext interface {
 	GetRequest() *http.Request

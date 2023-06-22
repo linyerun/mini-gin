@@ -1,70 +1,140 @@
 # Gee框架
 
 ## 使用说明
-- 在你的项目运行 `go get gitee.com/lyrLearning/Gee_v1.0` 即可把这个框架引入到你的项目中。
+- 在你的项目运行 `go get github.com/linyerun/Gee` 即可把这个框架引入到你的项目中。
 ```go
 package main
 
 import (
-	"fmt"
-	"github.com/linyerun/Gee/gee"
-	"github.com/linyerun/Gee/iface"
-	"html/template"
-	"net/http"
-	"time"
+  "fmt"
+  "github.com/linyerun/Gee/gee"
+  "github.com/linyerun/Gee/iface"
+  "html/template"
+  "time"
 )
 
-type student struct {
-	Name string
-	Age  int8
+func main() {
+  e := gee.Default()
+
+  // 普通路由方法的使用
+  e.GET("/lin", func(c iface.IContext) {
+    c.JSON(200, gee.H{"msg": "GET method,ok!", "code": 200})
+  })
+  e.POST("/ye", func(c iface.IContext) {
+    c.JSON(200, gee.H{"msg": "POST method,ok!", "code": 200})
+  })
+
+  // 加载HTML文件的位置, 配合c.HTML使用
+  e.SetFuncMap(template.FuncMap{"FormatAsDate": FormatAsDate}) //设置参数要在加载模板前进行
+  e.LoadHTMLGlob("templates/*")
+  e.GET("/html", func(c iface.IContext) {
+    c.HTML(200, "format_as_date.html", gee.H{
+      "title": "gee",
+      "now":   time.Date(2023, 06, 22, 16, 20, 0, 0, time.UTC),
+    })
+  })
+
+  // 加载静态文件
+  e.Static("/assets", "./static")
+
+  // 使用中间件
+  e.Use(new(MyMiddleware))
+
+  // 使用路由分组功能
+  userGroup := e.Group("/user")
+  {
+    userGroup.GET("/lin", func(c iface.IContext) {
+      c.JSON(200, gee.H{"msg": "GET method,ok!", "code": 200})
+    })
+    userGroup.POST("/ye", func(c iface.IContext) {
+      c.JSON(200, gee.H{"msg": "POST method,ok!", "code": 200})
+    })
+    userGroup.Static("/assets", "./user_file")
+    e.Use(new(MyMiddleware))
+  }
+
+  // 运行
+  panic(e.Run(":8080"))
 }
 
 func FormatAsDate(t time.Time) string {
-	year, month, day := t.Date()
-	return fmt.Sprintf("%d-%02d-%02d", year, month, day)
+  year, month, day := t.Date()
+  return fmt.Sprintf("%d-%02d-%02d", year, month, day)
 }
 
-func main() {
-	t1()
+type MyMiddleware struct {
 }
 
-func t1() {
-	r := gee.New()
+func (m *MyMiddleware) PrevHandle(c iface.IContext) {
+  fmt.Println(c.GetPath()+"执行前时间:", time.Now().Format("2006-01-02 15-04-05"))
+}
 
-	//设置参数要在加载模板前进行
-	r.SetFuncMap(template.FuncMap{
-		"FormatAsDate": FormatAsDate,
-	})
-
-	r.LoadHTMLGlob("templates/*")
-	r.Static("/assets", "./static")
-
-	stu1 := &student{Name: "GeekTutu", Age: 20}
-	stu2 := &student{Name: "Jack", Age: 22}
-
-	r.GET("/", func(c iface.IContext) {
-		c.HTML(http.StatusOK, "css.html", nil)
-	})
-	r.GET("/students", func(c iface.IContext) {
-		c.HTML(http.StatusOK, "arr.html", gee.H{
-			"title":  "gee",
-			"stuArr": [2]*student{stu1, stu2},
-		})
-	})
-	r.GET("/date", func(c iface.IContext) {
-		c.HTML(http.StatusOK, "custom_func.html", gee.H{
-			"title": "gee",
-			"now":   time.Date(2022, 04, 29, 10, 9, 8, 7, time.UTC),
-		})
-	})
-
-	if err := r.Run(":9999"); err != nil {
-		panic(err)
-	}
+func (m *MyMiddleware) LastHandle(c iface.IContext) {
+  fmt.Println(c.GetPath()+"执行后时间:", time.Now().Format("2006-01-02 15-04-05"))
 }
 ```
-代码中涉及的文件并没用给出，需要读者自行创建。
-## 介绍
+
+
+
+> 在项目的根目录下创建一个`static`文件夹，创建一个文件：`students.json`
+
+```json
+[
+  {
+    "name": "随风的叶子",
+    "age": 22,
+    "degree": "大三"
+  },
+  {
+    "name": "随风",
+    "age": 19,
+    "degree": "大一"
+  }
+]
+```
+
+
+
+> 在项目的根目录下创建一个`templates`文件夹，文件夹下面创建一个文件`format_as_date.html`
+
+```html
+<html>
+<body>
+    <p>hello, {{.title}}</p>
+    <p>Date: {{.now | FormatAsDate}}</p>
+</body>
+</html>
+```
+
+
+
+> 在项目的根目录下创建一个`user_file`文件夹，文件夹下面创建一个文件`user.json`
+
+```json
+{
+  "name": "用户姓名",
+  "birthday": "用户出生日期"
+}
+```
+
+
+
+## 实现简介
+
+- engine：自身是一个路由分组，同时也是HTTP程序的入口，它管理了全局的路由分组(包括它自身)
+- IRouterGroup：路由分组，我们可以使用`user方法`加入`中间件`，使用`GET`,`POST`,`Static`方法, 也是使用`Group方法`继续创建分组
+- router：它整合了前缀树进来，用于管理我们的前缀路由和特定路由执行的方法。它被整合到engine中
+- 大致的一个运行逻辑
+  - engine实现了`ServeHTTP`，里面需要做三件事情
+    1. 封装好`context`
+    2. 将满足要求的middleware加入到c的handler中
+    3. 交给handler处理
+       1. 找到处理对应路径的`iface.HandlerFunc `
+       2. 继续填充context信息
+       3. 通过`realCtx.next()`，开始执行中间件和业务逻辑
+
+## 功能简介
+
 Gee框架是一个Web框架，用于帮助开发者更好的管理和处理前端发送过来的请求。使用该框架，开发者获取前端发送过来的请求数据、返回结果、管理请求路由，对路由进行分组、引入中间件对请求进行前置处理和后置处理、通过HTML模板解析和静态资源服务功能、请求过程中的错误捕获与恢复。
 
 ## 优势
