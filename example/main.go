@@ -21,7 +21,8 @@ func main() {
 
 	// 加载HTML文件的位置, 配合c.HTML使用
 	e.SetFuncMap(template.FuncMap{"FormatAsDate": FormatAsDate}) //设置参数要在加载模板前进行
-	e.LoadHTMLGlob("templates/*")
+	e.LoadHTMLGlob("templates/*")                                // 加载所有的html文件
+
 	e.GET("/html", func(c iface.IContext) {
 		c.HTML(200, "format_as_date.html", gee.H{
 			"title": "gee",
