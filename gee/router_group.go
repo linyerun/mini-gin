@@ -48,7 +48,7 @@ func (r *routerGroup) Static(relativePath, fileRoot string) { //假如是(/asser
 		fileRoot = fileRoot[1:]
 	}
 	if _, err := os.Stat(fileRoot); err != nil { //判断文件夹是否存在
-		Logger().Errorln("in rootGroup.Static fileRoot err:", err)
+		Logger().Println("in rootGroup.Static fileRoot err:", err)
 		panic(err)
 	}
 	handler := r.createStaticHandler(relativePath, http.Dir(fileRoot))
@@ -65,7 +65,7 @@ func (r *routerGroup) createStaticHandler(relativePath string, fs http.FileSyste
 	handler := http.StripPrefix(r.prefix+relativePath, http.FileServer(fs)) // 这个请求的前缀加上relativePath变成fs对应的前缀就是handler能处理的了
 	return func(c iface.IContext) {
 		if _, err := fs.Open(c.Param("filepath")); err != nil {
-			Logger().Errorln(err)
+			Logger().Println(err)
 			c.JSON(400, H{
 				"code": 400,
 				"msg":  "不存在该文件",

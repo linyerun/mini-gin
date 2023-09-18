@@ -34,22 +34,22 @@ func (e *engine) SetFuncMap(f template.FuncMap) {
 }
 
 func (e *engine) LoadHTMLGlob(templatePathPattern string) {
-	Logger().Infoln("You should be sure use SetFuncMap before use LoadHTMLGlob!")
+	Logger().Println("You should be sure use SetFuncMap before use LoadHTMLGlob!")
 	glob, err := template.New("global").Funcs(funcMap).ParseGlob(templatePathPattern)
 	if err != nil {
-		panic(err)
+		Logger().Panic(err)
 	}
 	htmlTemplate = glob
 }
 
 func (e *engine) Run(addr string) (err error) {
-	Logger().Debugln("Gee Running.....")
+	Logger().Println("Gee Running.....")
 	return http.ListenAndServe(addr, e)
 }
 
 //所有请求的入口方法
 func (e *engine) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	Logger().Debugln(req.Host, "coming....", "request:[", req.Method, "]", "[", req.URL.Path, "]")
+	Logger().Println(req.Host, "coming....", "request:[", req.Method, "]", "[", req.URL.Path, "]")
 	c := newContext(req, resp).(*context)
 	//开始将满足要求的middleware加入到c里面
 	for _, group := range e.groups {

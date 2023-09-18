@@ -19,7 +19,7 @@ func (f *loggerHandler) PrevHandle(_ iface.IContext) {
 }
 
 func (f *loggerHandler) LastHandle(c iface.IContext) {
-	Logger().Infof("%s [%d] %s in %v", c.GetRequest().Host, c.GetStatusCode(), c.GetRequest().RequestURI, time.Since(f.t))
+	Logger().Printf("%s [%d] %s in %v", c.GetRequest().Host, c.GetStatusCode(), c.GetRequest().RequestURI, time.Since(f.t))
 }
 
 type recoverHandler struct {
@@ -29,7 +29,7 @@ func (r *recoverHandler) PrevHandle(c iface.IContext) {
 	defer func() {
 		if err := recover(); err != nil {
 			message := fmt.Sprintf("%s", err)
-			Logger().Infof("%s\n\n", trace(message))
+			Logger().Printf("%s\n\n", trace(message))
 			c.String(http.StatusInternalServerError, "Internal Server Error")
 		}
 	}()

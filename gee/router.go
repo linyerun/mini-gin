@@ -45,7 +45,7 @@ func (r *router) addRoute(method method, pattern string, handler iface.HandlerFu
 
 	root.insert(pattern, parts, 0)
 
-	Logger().Debugf("Route %4s - %s", method, pattern)
+	Logger().Printf("Route %4s - %s", method, pattern)
 }
 
 func (r *router) handle(c iface.IContext) {
