@@ -1,8 +1,8 @@
 package gee
 
 import (
-	"github.com/linyerun/Gee/iface"
-	. "github.com/linyerun/Gee/utils"
+	"github.com/linyerun/Mini-Gin/iface"
+	. "github.com/linyerun/Mini-Gin/utils"
 	"html/template"
 	"net/http"
 	"strings"
@@ -47,7 +47,7 @@ func (e *engine) Run(addr string) (err error) {
 	return http.ListenAndServe(addr, e)
 }
 
-//所有请求的入口方法
+// 所有请求的入口方法
 func (e *engine) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	Logger().Println(req.Host, "coming....", "request:[", req.Method, "]", "[", req.URL.Path, "]")
 	c := newContext(req, resp).(*context)

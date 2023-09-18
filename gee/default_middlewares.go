@@ -2,8 +2,8 @@ package gee
 
 import (
 	"fmt"
-	"github.com/linyerun/Gee/iface"
-	. "github.com/linyerun/Gee/utils"
+	"github.com/linyerun/Mini-Gin/iface"
+	. "github.com/linyerun/Mini-Gin/utils"
 	"net/http"
 	"runtime"
 	"strings"

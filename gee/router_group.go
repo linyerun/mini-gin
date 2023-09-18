@@ -1,8 +1,8 @@
 package gee
 
 import (
-	"github.com/linyerun/Gee/iface"
-	. "github.com/linyerun/Gee/utils"
+	"github.com/linyerun/Mini-Gin/iface"
+	. "github.com/linyerun/Mini-Gin/utils"
 	"net/http"
 	"os"
 )
@@ -14,7 +14,7 @@ type routerGroup struct {
 	engine      iface.IEngine       //所有groups共享一个engine实例
 }
 
-//创建一个路由分组
+// 创建一个路由分组
 func newRouterGroup(prefix string, parent iface.IRouterGroup, engine iface.IEngine) iface.IRouterGroup {
 	return &routerGroup{
 		prefix: prefix,

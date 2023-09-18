@@ -3,8 +3,8 @@ package gee
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/linyerun/Gee/iface"
-	. "github.com/linyerun/Gee/utils"
+	"github.com/linyerun/Mini-Gin/iface"
+	. "github.com/linyerun/Mini-Gin/utils"
 	"net/http"
 )
 
@@ -124,7 +124,7 @@ func (c *context) HTML(code int, name string, data any) {
 	}
 }
 
-//实现中间件
+// 实现中间件
 func (c *context) next() {
 	c.index++
 	c.handlers[c.index](c) //作者这里使用的是循环，因为有的用户不写next,或者说没用next的逻辑，但是我提供的接口自己执行next,保证了无需循环。
