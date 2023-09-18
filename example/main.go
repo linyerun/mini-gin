@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/linyerun/Gee/gee"
-	"github.com/linyerun/Gee/iface"
+	"github.com/linyerun/Mini-Gin/gee"
+	"github.com/linyerun/Mini-Gin/iface"
 	"html/template"
 	"time"
 )
