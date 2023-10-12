@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/linyerun/Mini-Gin/gee"
 	"io"
 	"log"
 	"os"
@@ -17,7 +18,11 @@ func Logger() *log.Logger {
 		if err != nil {
 			panic(err)
 		}
-		myLog = log.New(io.MultiWriter(output, os.Stdout), "[Mini-Gin-Log]", log.LstdFlags|log.Llongfile)
+		multiWriter := io.MultiWriter(output, os.Stdout)
+		if w := gee.GetMiniGinLogOutputWriter(); w != nil {
+			multiWriter = io.MultiWriter(w, os.Stdout)
+		}
+		myLog = log.New(multiWriter, "[Mini-Gin-Log]", log.LstdFlags|log.Llongfile)
 	})
 	return myLog
 }
