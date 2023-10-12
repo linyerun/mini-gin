@@ -21,4 +21,6 @@ type IContext interface {
 	JSON(code int, obj interface{})
 	Data(code int, data []byte)
 	HTML(code int, name string, data any)
+	Get(key string) (value any, ok bool)
+	Set(key string, value any)
 }

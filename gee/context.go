@@ -21,9 +21,12 @@ type context struct {
 	// response info
 	statusCode int
 
-	//实现中间件
+	// 实现中间件
 	index    int                 //当前执行的中间件(-1表示在0的前面)
 	handlers []iface.HandlerFunc //当前的handler放在这个的最后
+
+	// 自定义键值对
+	personalMsg map[string]any
 }
 
 func newContext(r *http.Request, w http.ResponseWriter) iface.IContext {
@@ -36,8 +39,7 @@ func newContext(r *http.Request, w http.ResponseWriter) iface.IContext {
 	}
 }
 
-// 获取更细度的接口
-
+// GetRequest 获取更细度的接口
 func (c *context) GetRequest() *http.Request {
 	return c.req
 }
@@ -58,10 +60,8 @@ func (c *context) GetStatusCode() int {
 	return c.statusCode
 }
 
-// 获取参数接口(还应该加一个获取Path的和Body的才行)
-
+// PostForm 获取参数接口(还应该加一个获取Path的和Body的才行)
 func (c *context) PostForm(key string) string {
-	//TODO 对这个方法掌握程度不够
 	return c.req.FormValue(key)
 }
 
@@ -73,21 +73,18 @@ func (c *context) Param(key string) string {
 	return c.params[key]
 }
 
-//设置返回状态
-
+// Status 设置返回状态
 func (c *context) Status(code int) {
 	c.statusCode = code
 	c.resp.WriteHeader(code)
 }
 
-//设置响应行
-
+// SetHeader 设置响应行
 func (c *context) SetHeader(key string, value string) {
 	c.resp.Header().Set(key, value)
 }
 
-//设置返回数据格式和内容
-
+// String 设置返回数据格式和内容
 func (c *context) String(code int, format string, values ...interface{}) {
 	c.SetHeader("Content-Type", "text/plain")
 	c.Status(code)
@@ -122,6 +119,15 @@ func (c *context) HTML(code int, name string, data any) {
 		c.String(500, "system has err,code =", 500)
 		panic(err)
 	}
+}
+
+func (c *context) Get(key string) (value any, ok bool) {
+	value, ok = c.personalMsg[key]
+	return
+}
+
+func (c *context) Set(key string, value any) {
+	c.personalMsg[key] = value
 }
 
 // 实现中间件
