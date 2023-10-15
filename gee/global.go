@@ -3,6 +3,7 @@ package gee
 import (
 	"html/template"
 	"io"
+	"reflect"
 )
 
 var (
@@ -17,6 +18,12 @@ var (
 
 // SetMiniGinLogOutputWriter 允许用户自定义日志的输出流
 func SetMiniGinLogOutputWriter(logWriter io.Writer) {
+	// 判断一下这个值, 避免为nil值
+	isNil := reflect.ValueOf(logWriter).IsNil()
+	if isNil {
+		panic("can not set logWriter to be nil")
+	}
+	// 设置
 	userLogWriter = logWriter
 }
 
