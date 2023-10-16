@@ -8,8 +8,8 @@ package main
 
 import (
   "fmt"
-  "github.com/linyerun/Mini-Gin/gee"
-  "github.com/linyerun/Mini-Gin/iface"
+  "github.com/linyerun/mini-gin/gin"
+  "github.com/linyerun/mini-gin/iface"
   "html/template"
   "time"
 )
@@ -31,7 +31,7 @@ func main() {
 
   e.GET("/html", func(c iface.IContext) {
     c.HTML(200, "format_as_date.html", gee.H{
-      "title": "gee",
+      "title": "gin",
       "now":   time.Date(2023, 06, 22, 16, 20, 0, 0, time.UTC),
     })
   })

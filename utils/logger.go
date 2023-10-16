@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/linyerun/mini-gin/gee"
+	"github.com/linyerun/mini-gin/gin"
 	"io"
 	"log"
 	"os"
@@ -46,7 +46,7 @@ func getOutputFile() (*os.File, error) {
 
 	//目录存在，那就直接执行下面的就行了
 	//开始创建文件
-	fileName := "gee" + ".log"
+	fileName := "gin" + ".log"
 	pathName := path.Join(filePath, fileName)
 	_, err = os.Stat(pathName)
 	if os.IsNotExist(err) {
