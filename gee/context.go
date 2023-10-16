@@ -3,8 +3,8 @@ package gee
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/linyerun/Mini-Gin/iface"
-	. "github.com/linyerun/Mini-Gin/utils"
+	"github.com/linyerun/mini-gin/iface"
+	. "github.com/linyerun/mini-gin/utils"
 	"net/http"
 )
 

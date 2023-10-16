@@ -1,7 +1,7 @@
 package gee
 
 import (
-	"github.com/linyerun/Mini-Gin/iface"
+	"github.com/linyerun/mini-gin/iface"
 	"strings"
 )
 

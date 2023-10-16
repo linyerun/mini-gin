@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/linyerun/Mini-Gin/gee"
+	"github.com/linyerun/mini-gin/gee"
 	"io"
 	"log"
 	"os"
